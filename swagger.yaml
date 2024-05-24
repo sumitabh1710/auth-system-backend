@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: My API
+  version: 1.0.0
+  description: API documentation for my application
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+  /auth/login:
+    post:
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Unauthorized - Invalid credentials
+        '500':
+          description: Internal server error
+
+  /users/me:
+    get:
+      summary: Get user's profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+        '401':
+          description: Unauthorized - Invalid token
+        '500':
+          description: Internal server error
+
+    patch:
+      summary: Update user's profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: User profile updated successfully
+        '401':
+          description: Unauthorized - Invalid token
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+  /users/public:
+    get:
+      summary: Get public profiles
+      responses:
+        '200':
+          description: Public profiles retrieved successfully
+        '500':
+          description: Internal server error
+
+  /users/private:
+    get:
+      summary: Get private profiles (admin only)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Private profiles retrieved successfully
+        '401':
+          description: Unauthorized - Not an admin
+        '500':
+          description: Internal server error
+
+  /users/{id}:
+    get:
+      summary: Get user profile by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: User ID
+      responses:
+        '200':
+          description: User profile retrieved successfully
+        '401':
+          description: Unauthorized - Invalid token
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        profilePicture:
+          type: string
+        isPublic:
+          type: boolean
+      required:
+        - name
+        - email
+        - isPublic
