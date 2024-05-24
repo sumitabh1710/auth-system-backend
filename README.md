@@ -12,4 +12,4 @@ Getting Started
 
 3. Start the server - npm run start
 
-Url for accessing the swagger docs - http://localhost:<PORT>/api-docs/
+Url for accessing the swagger docs - http://localhost:5000/api-docs/
